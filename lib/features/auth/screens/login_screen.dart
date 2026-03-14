@@ -40,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     if (_isLoading) return;
     setState(() => _isLoading = true);
+    // Login locally (no API): AuthProvider saves token/user so router & splash see us as logged in.
     final auth = context.read<AuthProvider>();
     final ok = await auth.login(identifier: id, password: pass);
     if (!mounted) return;

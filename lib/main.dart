@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/routes/app_router.dart';
-import 'core/services/api_service.dart';
 import 'core/services/auth_service.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/providers/onboarding_provider.dart';
@@ -29,8 +28,7 @@ void main() async {
   // Initialize SharedPreferences
   final prefs = await SharedPreferences.getInstance();
   
-  // Initialize services
-  final apiService = ApiService();
+  // Initialize services (API disabled; all data local/mock)
   final authService = AuthService(prefs);
   
   // Set system UI overlay style
@@ -48,7 +46,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => LanguageProvider(prefs)),
         ChangeNotifierProvider(create: (_) => AuthProvider(authService)),
-        ChangeNotifierProvider(create: (_) => OnboardingProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => OnboardingProvider()),
         ChangeNotifierProvider(create: (_) => ChildrenProvider(authService)),
         ChangeNotifierProvider(create: (_) => DoctorsProvider(authService)),
         ChangeNotifierProvider(create: (_) => HomeDataProvider()),

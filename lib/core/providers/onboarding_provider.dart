@@ -1,6 +1,4 @@
 import 'package:flutter/foundation.dart';
-import '../services/api_service.dart';
-import '../config/app_config.dart';
 
 class OnboardingSlide {
   final String imageUrl;
@@ -14,10 +12,9 @@ class OnboardingSlide {
   });
 }
 
+/// Onboarding uses local default slides only (API connection disabled).
 class OnboardingProvider extends ChangeNotifier {
-  final ApiService _apiService;
-  
-  OnboardingProvider(this._apiService);
+  OnboardingProvider();
   
   List<OnboardingSlide> _slides = [];
   int _currentIndex = 0;
@@ -30,36 +27,10 @@ class OnboardingProvider extends ChangeNotifier {
   Future<void> loadOnboardingSlides({String? language}) async {
     _isLoading = true;
     notifyListeners();
-
-    try {
-      final query = language != null ? '?language=$language' : '?platform=MOBILE';
-      final response = await _apiService.get('${AppConfig.onboardingEndpoint}$query');
-      if (response['success'] == true && response['data'] != null) {
-        final list = response['data'] as List<dynamic>?;
-        if (list != null && list.isNotEmpty) {
-          _slides = list
-              .where((e) => e is Map)
-              .map((e) {
-                final m = Map<String, dynamic>.from(e as Map);
-                return OnboardingSlide(
-                  imageUrl: (m['imageUrl'] ?? m['image'] ?? '') as String,
-                  title: (m['title'] ?? '') as String,
-                  description: (m['description'] ?? '') as String,
-                );
-              })
-              .toList();
-        } else {
-          _slides = _getDefaultSlides();
-        }
-      } else {
-        _slides = _getDefaultSlides();
-      }
-    } catch (_) {
-      _slides = _getDefaultSlides();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    _slides = _getDefaultSlides();
+    _isLoading = false;
+    notifyListeners();
   }
   
   List<OnboardingSlide> _getDefaultSlides() {

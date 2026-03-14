@@ -154,7 +154,7 @@ class _RecommendedPackagesSection extends StatelessWidget {
         ),
         SizedBox(height: 12.h),
         SizedBox(
-          height: 220.h,
+          height: 300.h,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             reverse: true,
