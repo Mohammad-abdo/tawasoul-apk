@@ -158,7 +158,7 @@ class AppStrings {
   static const String isPermissionsAccepted = "isPermissionsAccepted";
   static const String isDark = "isDark";
   static const String isOnline = "isOnline";
-  static const String isOnboard = "isOnboard";
+  static const String isOnboard = "onboarding_completed";//"isOnboard";
   static const String isLanguageSelected = "isLanguageSelected";
 
   /// Same key as [LanguageCubit] — used to detect first-time language done
