@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_app/core/classes/app_initializer.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'core/di.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/routes/app_router.dart';
 import 'core/services/auth_service.dart';
-import 'core/providers/auth_provider.dart';
+import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'core/providers/onboarding_provider.dart';
 import 'core/providers/children_provider.dart';
 import 'core/providers/doctors_provider.dart';
@@ -22,15 +25,16 @@ import 'core/services/notification_sound_service.dart';
 
 import 'features/mahara/providers/mahara_provider.dart';
 
-void main() async {
+final navigatorKey = GlobalKey<NavigatorState>();
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize SharedPreferences
-  final prefs = await SharedPreferences.getInstance();
-  
-  // Initialize services (API disabled; all data local/mock)
-  final authService = AuthService(prefs);
-  
+  await AppInitializer.init();
+  await setupDependencies();
+
+  final prefs = sl<SharedPreferences>();
+
+  final authService = sl<AuthService>();
+
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -40,28 +44,33 @@ void main() async {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
-  
+
   runApp(
-    MultiProvider(
+    MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LanguageProvider(prefs)),
-        ChangeNotifierProvider(create: (_) => AuthProvider(authService)),
-        ChangeNotifierProvider(create: (_) => OnboardingProvider()),
-        ChangeNotifierProvider(create: (_) => ChildrenProvider(authService)),
-        ChangeNotifierProvider(create: (_) => DoctorsProvider(authService)),
-        ChangeNotifierProvider(create: (_) => HomeDataProvider()),
-        ChangeNotifierProvider(create: (_) => FAQProvider()),
-        ChangeNotifierProvider(create: (_) => AssessmentProvider()),
-        ChangeNotifierProvider(create: (_) => BookingsProvider(authService)),
-        ChangeNotifierProvider(create: (_) => NotificationsProvider(authService)),
-        Provider<NotificationSoundService>(create: (_) => NotificationSoundService(prefs)),
-        ChangeNotifierProvider(create: (_) => MaharaProvider()),
+        BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()),
       ],
-      child: const TawasoulApp(),
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => LanguageProvider(prefs)),
+          ChangeNotifierProvider(create: (_) => OnboardingProvider()),
+          ChangeNotifierProvider(create: (_) => ChildrenProvider(authService)),
+          ChangeNotifierProvider(create: (_) => DoctorsProvider(authService)),
+          ChangeNotifierProvider(create: (_) => HomeDataProvider()),
+          ChangeNotifierProvider(create: (_) => FAQProvider()),
+          ChangeNotifierProvider(create: (_) => AssessmentProvider()),
+          ChangeNotifierProvider(create: (_) => BookingsProvider(authService)),
+          ChangeNotifierProvider(
+              create: (_) => NotificationsProvider(authService)),
+          Provider<NotificationSoundService>(
+              create: (_) => NotificationSoundService(prefs)),
+          ChangeNotifierProvider(create: (_) => MaharaProvider()),
+        ],
+        child: const TawasoulApp(),
+      ),
     ),
   );
 }
-
 
 class TawasoulApp extends StatelessWidget {
   const TawasoulApp({super.key});
@@ -96,7 +105,8 @@ class TawasoulApp extends StatelessWidget {
                 // Use provider's locale first
                 final providerLocale = languageProvider.locale;
                 for (var supportedLocale in supportedLocales) {
-                  if (supportedLocale.languageCode == providerLocale.languageCode) {
+                  if (supportedLocale.languageCode ==
+                      providerLocale.languageCode) {
                     return supportedLocale;
                   }
                 }
@@ -118,4 +128,3 @@ class TawasoulApp extends StatelessWidget {
     );
   }
 }
-

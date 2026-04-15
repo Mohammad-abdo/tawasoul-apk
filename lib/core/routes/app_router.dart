@@ -1,10 +1,9 @@
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
-import '../../features/auth/screens/login_screen.dart';
-import '../../features/auth/screens/register_screen.dart';
-import '../../features/auth/screens/otp_verification_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/screens/otp_verification_screen.dart';
 import '../../features/assessment_onboarding/screens/assessment_intro_screen.dart';
 import '../../features/assessment_onboarding/screens/assessment_child_info_screen.dart';
 import '../../features/assessment_onboarding/screens/assessment_summary_screen.dart';
@@ -61,17 +60,15 @@ import '../../features/children/screens/child_evaluation_dashboard.dart';
 import '../../features/favorites/screens/favorites_screen.dart';
 import '../../features/history/screens/history_screen.dart';
 import '../../features/orders/screens/orders_list_screen.dart';
-import '../providers/auth_provider.dart';
 import '../config/app_config.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/splash',
   redirect: (context, state) async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
     final onboardingCompleted = prefs.getBool(AppConfig.keyOnboardingCompleted) ?? false;
     final assessmentOnboardingCompleted = prefs.getBool(AppConfig.keyAssessmentOnboardingCompleted) ?? false;
-    final isLoggedIn = authProvider.isAuthenticated || prefs.getString(AppConfig.keyAuthToken) != null;
+    final isLoggedIn = prefs.getString(AppConfig.keyAuthToken) != null;
 
     final loc = state.matchedLocation;
     final isSplash = loc == '/splash';

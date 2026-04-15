@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +9,7 @@ import '../../../core/widgets/child_profile_avatar_gateway.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/app_icons.dart';
-import '../../../core/providers/auth_provider.dart';
+import '../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../core/providers/notifications_provider.dart';
 import '../../shared/mock_content.dart';
 import '../constants/account_theme.dart';
@@ -389,7 +390,7 @@ Widget _LogoutButton(BuildContext context) {
     height: 52.h,
     child: OutlinedButton.icon(
       onPressed: () async {
-        await context.read<AuthProvider>().logout();
+        await context.read<AuthCubit>().logout();
         if (context.mounted) context.go('/login');
       },
       icon: Icon(Icons.logout_rounded, size: 20.sp, color: AppColors.error),

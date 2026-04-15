@@ -146,4 +146,26 @@ class AppStrings {
   static const String howWasCall = 'كيف كانت مكالمتك صباح الجمعة مع osama؟';
   static const String leaveComment = 'اترك لنا تعليقك..!';
   static const String characterCount = '/500';
+
+   static const fontFamily = "Co";
+  static const cairo = "Cairo";
+  static const String english = "English";
+  static const String arabic = "Arabic";
+  static const String user = "user";
+  static const String isLogin = "isLogin";
+  static const String isSplash = "isSplash";
+  static const String isOnBoard = "isOnBoard";
+  static const String isPermissionsAccepted = "isPermissionsAccepted";
+  static const String isDark = "isDark";
+  static const String isOnline = "isOnline";
+  static const String isOnboard = "isOnboard";
+  static const String isLanguageSelected = "isLanguageSelected";
+
+  /// Same key as [LanguageCubit] — used to detect first-time language done
+  static const String appLanguage = "app_language";
+  static const String fcm = "FCM";
+  static const jsonContentType = 'application/json';
+
+  //* shard
+  static const String theme = 'theme';
 }

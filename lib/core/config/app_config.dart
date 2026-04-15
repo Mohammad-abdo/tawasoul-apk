@@ -28,6 +28,8 @@ class AppConfig {
   }
 
   // ─── 1. Authentication & User (Postman §1) ─────────────────────────────
+  static const String loginEndpoint = '/user/auth/login';
+  static const String registerEndpoint = '/user/auth/register';
   static const String sendOtpEndpoint = '/user/auth/send-otp';
   static const String verifyOtpEndpoint = '/user/auth/verify-otp';
   static const String resendOtpEndpoint = '/user/auth/resend-otp';

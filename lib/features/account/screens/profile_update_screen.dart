@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_app/core/enums/request_status.dart';
 import '../../../core/widgets/app_header.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/providers/auth_provider.dart';
+import '../../auth/presentation/cubit/auth_cubit.dart';
+import '../../auth/presentation/cubit/auth_state.dart';
 
 class ProfileUpdateScreen extends StatefulWidget {
   const ProfileUpdateScreen({super.key});
@@ -30,12 +32,11 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   void _loadUser() {
     if (_initialized || !mounted) return;
-    final ap = context.read<AuthProvider>();
-    final u = ap.user;
+    final u = context.read<AuthCubit>().state.user;
     if (u != null) {
-      _nameController.text = (u['fullName'] ?? u['name'] ?? '').toString();
-      _emailController.text = (u['email'] ?? '').toString();
-      _phoneController.text = (u['phone'] ?? '').toString();
+      _nameController.text = u.fullName ?? '';
+      _emailController.text = u.email ?? '';
+      _phoneController.text = u.phone ?? '';
     }
     _initialized = true;
   }
@@ -95,16 +96,16 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                     _buildInputLabel('رقم الهاتف'),
                     _buildTextField(_phoneController),
                     SizedBox(height: 40.h),
-                    Consumer<AuthProvider>(
-                      builder: (context, ap, _) {
+                    BlocBuilder<AuthCubit, AuthState>(
+                      builder: (context, ap) {
                         return SizedBox(
                           width: double.infinity,
                           height: 54.h,
                           child: ElevatedButton(
-                            onPressed: ap.isLoading
+                            onPressed: ap.requestStatus == RequestStatus.loading
                                 ? null
                                 : () async {
-                                    final ok = await ap.updateProfile(
+                                    final ok = await context.read<AuthCubit>().updateProfile(
                                       fullName: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
                                       email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
                                     );
@@ -114,7 +115,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                               backgroundColor: AppColors.primary,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                             ),
-                            child: ap.isLoading
+                            child: ap.requestStatus == RequestStatus.loading
                                 ? const SizedBox(
                                     height: 24,
                                     width: 24,
